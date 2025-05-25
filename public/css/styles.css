@@ -1,0 +1,41 @@
+/* FIATTIB Custom Styles */
+
+body {
+  font-family: 'Inter', sans-serif;
+}
+
+/* Navbar logo hover */
+header h1:hover {
+  color: #2563eb; /* Tailwind blue-600 */
+}
+
+/* Button Hover Animations */
+a.btn-primary {
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+a.btn-primary:hover {
+  background-color: #1d4ed8; /* Tailwind blue-700 */
+  transform: translateY(-2px);
+}
+
+/* Card hover effect */
+.card-hover:hover {
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  transform: translateY(-4px);
+  transition: all 0.3s ease;
+}
+
+/* Smooth image appearance */
+img {
+  border-radius: 8px;
+  transition: transform 0.3s ease;
+}
+img:hover {
+  transform: scale(1.03);
+}
+
+/* CTA Section Override */
+.cta-section {
+  background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+  color: white;
+}
