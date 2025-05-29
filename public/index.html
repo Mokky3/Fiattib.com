@@ -9,61 +9,44 @@
   <link rel="stylesheet" href="css/styles.css" />
   <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FIATTIB – Smarter Healthcare</title>
-  <link rel="icon" href="favicon.png" type="image/png" />
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="css/styles.css" />
-  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-
 <script>
 function mainApp() {
   return {
     lang: localStorage.getItem('lang') || 'EN',
     translations: {},
-    active: '',
     icons: [
-      { emoji: '🔒', radius: 120, speed: 0.02 },
-      { emoji: '📅', radius: 170, speed: 0.018 },
-      { emoji: '📈', radius: 200, speed: 0.015 },
-      { emoji: '🤝', radius: 150, speed: 0.017 },
-      { emoji: '🧬', radius: 230, speed: 0.019 },
+      { emoji: '🔒' }, { emoji: '📅' }, { emoji: '📈' }, { emoji: '🤝' }, { emoji: '🧬' },
+      { emoji: '💉' }, { emoji: '🏥' }, { emoji: '📋' }, { emoji: '🧠' }, { emoji: '🩺' }
     ],
     activeIndex: null,
+    hovered: null,
     isMobile: window.innerWidth < 768,
     t: 0,
-    hovered: null,
+    scrollY: 0,
 
     init() {
+      this.handleScroll();
+      window.addEventListener('scroll', this.handleScroll.bind(this));
+      window.addEventListener('resize', () => {
+        this.isMobile = window.innerWidth < 768;
+      });
+
       fetch('lang.json')
         .then(res => res.json())
         .then(data => this.translations = data)
-        .catch(e => console.error("Translation load error:", e));
-
-      const sections = ['about', 'features', 'who', 'demo'];
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) this.active = entry.target.id;
-        });
-      }, { threshold: 0.5 });
-      sections.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) observer.observe(el);
-      });
+        .catch(err => console.error("Translation load error:", err));
 
       this.animate();
     },
 
-    animate() {
-      requestAnimationFrame(() => this.animate());
-      const isSlowed = this.hovered !== null || (this.isMobile && this.activeIndex !== null);
-      this.t += isSlowed ? 0.0005 : 0.0012;
+    handleScroll() {
+      this.scrollY = window.scrollY;
     },
 
+    animate() {
+      this.t += 0.002;
+      requestAnimationFrame(() => this.animate());
+    },
 
     setLang(newLang) {
       this.lang = newLang;
@@ -71,55 +54,44 @@ function mainApp() {
     },
 
     setActive(index) {
-      this.activeIndex = this.activeIndex === index ? null : index;
+      if (this.isMobile) {
+        this.activeIndex = this.activeIndex === index ? null : index;
+      } else {
+        this.activeIndex = index;
+        this.hovered = null;
+      }
     },
 
     hoverIn(index) {
-    if (!this.isMobile) {
-      this.hovered = index;
-    }
-  },
-
-  hoverOut() {
-    if (!this.isMobile) {
-      this.hovered = null;
-    }
-  },
-
-    getIconStyle(i) {
-      const icon = this.icons[i];
-      const angle = this.t * icon.speed + i;
-      const x = Math.cos(angle) * icon.radius;
-      const y = Math.sin(angle * 1.5) * icon.radius;
-      return `
-        position: absolute;
-        top: calc(50% + ${y}px);
-        left: calc(50% + ${x}px);
-        transform: translate(-50%, -50%);
-      `;
+      if (!this.isMobile) {
+        this.hovered = index;
+        this.activeIndex = null;
+      }
     },
 
-    getLineStyle(i) {
-      const icon = this.icons[i];
-      const angle = this.t * icon.speed + i;
-      const x = Math.cos(angle) * icon.radius;
-      const y = Math.sin(angle * 1.5) * icon.radius;
-      const length = Math.sqrt(x * x + y * y);
-      const rotation = Math.atan2(y, x) * 180 / Math.PI;
-      return `
-        width: ${length}px;
-        height: 1px;
-        background-color: rgba(0, 0, 0, 0.2);
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        transform: rotate(${rotation}deg) translateX(0);
-        transform-origin: left;
-      `;
-    }
-  }
+    hoverOut() {
+      if (!this.isMobile) {
+        this.hovered = null;
+      }
+    },
+
+    getRayStyle(index) {
+      const baseAngle = (360 / this.icons.length) * index;
+      const wiggle = Math.sin(this.t * 4 + index) * 2;
+      return `transform: rotate(${baseAngle + wiggle}deg);`;
+    },
+
+    getIconBurstPosition(index) {
+      const baseRadius = this.isMobile ? 110 : 200;
+      const pulseStrength = this.isMobile ? 8 : 15;
+      const pulse = Math.sin(this.t * 2) * pulseStrength;
+      const distance = baseRadius + pulse;
+      return `transform: translateX(${distance}px);`;
+    },
+  };
 }
 </script>
+
 
 
 
@@ -146,7 +118,25 @@ function mainApp() {
 }
 </style>
 
+<style>
+@keyframes pulse-smooth {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.12); opacity: 0.85; }
+}
+.animate-pulse-smooth {
+  animation: pulse-smooth 2s ease-in-out infinite;
+}
 
+
+@keyframes subtle-pop {
+  0% { transform: scale(0.95); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.animate-subtle-pop {
+  animation: subtle-pop 0.3s ease-out;
+}
+
+</style>
 </head>
 
 <body class="bg-gray-50 text-gray-800" x-data="mainApp()" x-init="init()">
@@ -229,83 +219,154 @@ function mainApp() {
   </header>
 
   <!-- Hero Section -->
-  <section class="text-center py-20 px-6 bg-primary/10">
-    <h2 class="text-4xl font-bold mb-4">Welcome to FIATTIB</h2>
-    <p class="text-lg mb-8" x-text="translations[lang]?.subtitle"></p>
-    <div  class="flex flex-col sm:flex-row gap-4 items-center justify-center">
-      <a href="#" class="px-6 py-3 bg-primary text-white rounded hover:bg-primary/80" x-text="translations[lang]?.explore"></a>
-      <a href="#" class="px-6 py-3 border border-primary text-primary rounded hover:bg-primary/10" x-text="translations[lang]?.demo"></a>
+  <section class="relative text-center py-28 px-6 bg-primary/10 overflow-hidden">
+    <!-- Huge FIATTIB Text -->
+    <h1 class="text-[10vw] font-extrabold tracking-tight text-primary drop-shadow-md z-10 relative">
+      FIATTIB
+    </h1>
+
+    <!-- Subtitle -->
+    <p class="text-lg sm:text-xl mt-4 text-gray-800 z-10 relative" x-text="translations[lang]?.subtitle"></p>
+
+    <!-- Buttons -->
+    <div class="flex flex-col sm:flex-row gap-4 items-center justify-center mt-8 z-10 relative">
+      <a href="#" class="px-6 py-3 bg-primary text-white rounded hover:bg-primary/80 transition" x-text="translations[lang]?.explore"></a>
+      <a href="#" class="px-6 py-3 border border-primary text-primary rounded hover:bg-primary/10 transition" x-text="translations[lang]?.demo"></a>
+    </div>
+
+    <!-- Optional Radial Background Glow -->
+    <div class="absolute inset-0 flex items-center justify-center z-0">
+      <div class="w-[80vw] h-[80vw] bg-primary/10 rounded-full blur-3xl"></div>
     </div>
   </section>
- <!-- About Section -->
-<section id="about" class="py-16 px-4 max-w-5xl mx-auto text-center">
-  <div class="md:flex md:items-center md:space-x-12">
-    <div class="md:w-1/2 mb-8 md:mb-0">
-      <img src="images/main_dashboard2.png" alt="FIATTIB dashboard mockup" class="rounded shadow mx-auto" />
+
+
+
+  
+<!-- About Section -->
+<section id="about" class="relative py-20 px-6 bg-gradient-to-b from-[#f8fafc] to-[#e3f4ed] text-gray-800 overflow-hidden">
+
+  <!-- Decorative Green Line at Bottom -->
+  <div class="absolute bottom-0 left-0 w-full h-1 bg-primary z-10"></div>
+
+  <!-- Background Glow Blob -->
+  <div class="absolute top-0 right-0 w-72 h-72 bg-primary/20 rounded-full blur-3xl opacity-30 -z-10"></div>
+
+  <!-- Content Wrapper -->
+  <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-12">
+    
+    <!-- Dashboard Image -->
+    <div class="md:w-1/2">
+      <img src="images/main_dashboard2.png"
+           alt="FIATTIB Dashboard Mockup"
+           class="rounded-xl shadow-xl border border-gray-200" />
     </div>
-    <div class="md:w-1/2 text-left">
-      <h3 class="text-3xl font-semibold text-center md:text-left mb-6" x-text="translations[lang]?.about_title"></h3>
-      <p class="mb-4" x-text="translations[lang]?.about_1"></p>
-      <p class="mb-2 font-semibold" x-text="translations[lang]?.about_2"></p>
-      <p x-text="translations[lang]?.about_3"></p>
+
+    <!-- Text with Icons -->
+    <div class="md:w-1/2 space-y-6 text-left">
+      <h3 class="text-4xl font-extrabold text-primary" x-text="translations[lang]?.about_title"></h3>
+
+      <div class="flex items-start gap-4">
+        <span class="text-3xl"></span>
+        <p class="text-lg leading-relaxed" x-text="translations[lang]?.about_1"></p>
+      </div>
+
+      <div class="flex items-start gap-4">
+        <span class="text-3xl"></span>
+        <p class="text-lg font-semibold text-primary" x-text="translations[lang]?.about_2"></p>
+      </div>
+
+      <div class="flex items-start gap-4">
+        <span class="text-3xl"></span>
+        <p class="text-base leading-relaxed" x-text="translations[lang]?.about_3"></p>
+      </div>
     </div>
   </div>
 </section>
 
 
+
 <section id="features"
-         class="relative h-screen overflow-hidden"
-         style="background: radial-gradient(ellipse at center, #7AC2A5 0%, #f8fafc 100%)"
+         class="relative min-h-screen overflow-hidden bg-black text-white max-w-full"
+         style="background: radial-gradient(circle at center, #7AC2A5 0%, #c0e2d3 50%, #f8fafc 100%)"
          x-data="mainApp()"
-         x-init="init()"
-         @resize.window="isMobile = window.innerWidth < 768">
+         x-init="init(); scrollY = window.scrollY"
+         @resize.window="isMobile = window.innerWidth < 768"
+         @scroll.window="scrollY = window.scrollY">
+
+  <!-- Top fade -->
+  <div class="absolute top-0 left-0 w-full h-12 bg-gradient-to-b from-[#f8fafc] to-transparent pointer-events-none z-10"></div>
+
+  <!-- Bottom fade -->
+  <div class="absolute bottom-0 left-0 w-full h-12 bg-gradient-to-t from-[#f8fafc] to-transparent pointer-events-none z-10"></div>
+
+  <!-- Background radial lines -->
+  <svg class="absolute inset-0 w-full h-full z-0" xmlns="http://www.w3.org/2000/svg">
+    <template x-for="(icon, index) in icons" :key="'line-' + index">
+      <line
+        :x1="window.innerWidth / 2"
+        :y1="window.innerHeight / 2"
+        :x2="window.innerWidth / 2 + Math.cos((2 * Math.PI / icons.length) * index) * 300"
+        :y2="window.innerHeight / 2 + Math.sin((2 * Math.PI / icons.length) * index) * 300"
+        stroke="white" stroke-opacity="0.08" stroke-width="1.2" />
+    </template>
+  </svg>
+
+  <!-- Background "FEATURES" Text -->
+  <div class="absolute inset-0 flex items-center justify-center z-0 pointer-events-none">
+    <h2 class="font-extrabold text-white/10 tracking-wider uppercase text-[10vw] sm:text-[12vw] transition-transform duration-300"
+        :style="`transform: scale(${1 + scrollY / 1500}); opacity: ${Math.min(1, scrollY / 500)}`"
+        x-text="translations[lang]?.features_title || 'Features'">
+    </h2>
+  </div>
 
   <!-- Center Logo -->
-  <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20">
-    <div class="w-20 h-20 sm:w-24 sm:h-24 bg-primary rounded-full flex items-center justify-center shadow-xl border-4 border-white">
+  <div class="w-20 h-20 sm:w-24 sm:h-24 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20">
+    <div class="w-full h-full bg-primary rounded-full flex items-center justify-center animate-pulse-smooth shadow-xl">
       <img src="images/logo.png" alt="FIATTIB Logo" class="w-10 h-10 sm:w-12 sm:h-12 object-contain" />
     </div>
   </div>
 
-  <!-- Orbiting Icons with lines -->
-  <template x-for="(icon, index) in icons" :key="index">
-    <div>
-      <!-- Connecting Line -->
-      <div :style="getLineStyle(index)" class="absolute z-0"></div>
-
-      <!-- Orbiting Icon -->
-      <div :style="getIconStyle(index)"
-           class="absolute z-10 group cursor-pointer text-center"
-           @mouseenter="hoverIn(index)"
-           @mouseleave="hoverOut()"
-           @click="setActive(index)">
-
-        <div class="text-3xl sm:text-4xl bg-white/30 backdrop-blur-md rounded-full p-2 transition-transform group-hover:scale-125">
+  <!-- Orbiting Icons -->
+  <template x-for="(icon, index) in icons" :key="'icon-' + index">
+    <div class="absolute top-1/2 left-1/2">
+      <div :style="getRayStyle(index)" class="absolute origin-left" style="top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(0deg);">
+        <div :style="getIconBurstPosition(index)"
+             class="w-8 h-8 sm:w-10 sm:h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center 
+                    text-2xl transition-transform duration-300 cursor-pointer"
+             :class="{ 'blur-sm opacity-40 pointer-events-none': activeIndex !== null && activeIndex !== index }"
+             @mouseenter="hoverIn(index)"
+             @mouseleave="hoverOut()"
+             @click="setActive(index)">
           <span x-text="icon.emoji"></span>
         </div>
-
-        <!-- Tooltip -->
-        <div x-show="(hovered === index || activeIndex === index) && translations[lang]" 
-            x-transition
-            class="absolute mt-2 bg-gray-900 text-white text-sm rounded px-3 py-1 z-50 whitespace-nowrap"
-            x-text="translations[lang]?.[`feature_${index + 1}_hint`]">
-        </div>
-
-           
       </div>
     </div>
   </template>
 
-  <!-- Bottom Info Panel (for mobile tap or desktop click) -->
-  <!-- Bottom Info Panel -->
-  <div x-show="activeIndex !== null && translations[lang]" x-transition
-      @click.outside="activeIndex = null"
-      class="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-[90%] sm:max-w-md bg-black/70 p-4 rounded text-white text-sm shadow z-30 backdrop-blur">
-    <h4 class="text-base font-semibold mb-2" x-text="translations[lang]?.[`feature_${activeIndex + 1}`]"></h4>
-    <p x-text="translations[lang]?.[`feature_${activeIndex + 1}_expand`]"></p>
-  </div>
+  <!-- Info Popup -->
+  <div x-show="activeIndex !== null && translations[lang]" 
+       x-transition:enter="transition ease-out duration-300"
+       x-transition:enter-start="opacity-0 scale-75 translate-y-4"
+       x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+       x-transition:leave="transition ease-in duration-200"
+       x-transition:leave-start="opacity-100 scale-100"
+       x-transition:leave-end="opacity-0 scale-50"
+       @click.outside="activeIndex = null"
+       class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 
+              bg-white/20 backdrop-blur-xl p-6 rounded-xl shadow-xl 
+              text-white text-base z-50 w-[90%] sm:max-w-md animate-subtle-pop">
 
+    <div class="text-lg font-semibold mb-2" x-text="translations[lang]?.[`feature_${activeIndex + 1}`]"></div>
+    <p x-text="translations[lang]?.[`feature_${activeIndex + 1}_expand`]"></p>
+
+    <button @click="activeIndex = null"
+            class="mt-4 text-sm text-white/70 hover:text-white transition">
+      ✕ Close
+    </button>
+  </div>
 </section>
+
 
 
 <!-- Who It's For Section -->
