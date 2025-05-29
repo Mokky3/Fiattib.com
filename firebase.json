@@ -1,13 +1,7 @@
 {
   "hosting": {
     "public": "public",
-    "redirects": [
-      {
-        "source": "/**",
-        "destination": "https://fiattib.com",
-        "type": 301
-      }
-    ],
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "headers": [
       {
         "source": "/**",
@@ -19,6 +13,11 @@
         ]
       }
     ],
-    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"]
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
   }
 }

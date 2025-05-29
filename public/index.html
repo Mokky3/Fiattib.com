@@ -8,22 +8,123 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="css/styles.css" />
   <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-  <script>
-    document.addEventListener('alpine:init', () => {
-      Alpine.data('langSwitcher', () => ({
-        lang: localStorage.getItem('lang') || 'EN',
-        translations: {},
-        async init() {
-          const res = await fetch('lang.json');
-          this.translations = await res.json();
-        },
-        setLang(newLang) {
-          this.lang = newLang;
-          localStorage.setItem('lang', newLang);
-        }
-      }))
-    });
-  </script>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FIATTIB – Smarter Healthcare</title>
+  <link rel="icon" href="favicon.png" type="image/png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="css/styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+
+<script>
+function mainApp() {
+  return {
+    lang: localStorage.getItem('lang') || 'EN',
+    translations: {},
+    active: '',
+    icons: [
+      { emoji: '🔒', radius: 120, speed: 0.02 },
+      { emoji: '📅', radius: 170, speed: 0.018 },
+      { emoji: '📈', radius: 200, speed: 0.015 },
+      { emoji: '🤝', radius: 150, speed: 0.017 },
+      { emoji: '🧬', radius: 230, speed: 0.019 },
+    ],
+    activeIndex: null,
+    isMobile: window.innerWidth < 768,
+    t: 0,
+    hovered: null,
+
+    init() {
+      fetch('lang.json')
+        .then(res => res.json())
+        .then(data => this.translations = data)
+        .catch(e => console.error("Translation load error:", e));
+
+      const sections = ['about', 'features', 'who', 'demo'];
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) this.active = entry.target.id;
+        });
+      }, { threshold: 0.5 });
+      sections.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) observer.observe(el);
+      });
+
+      this.animate();
+    },
+
+    animate() {
+      requestAnimationFrame(() => this.animate());
+      const isSlowed = this.hovered !== null || (this.isMobile && this.activeIndex !== null);
+      this.t += isSlowed ? 0.0005 : 0.0012;
+    },
+
+
+    setLang(newLang) {
+      this.lang = newLang;
+      localStorage.setItem('lang', newLang);
+    },
+
+    setActive(index) {
+      this.activeIndex = this.activeIndex === index ? null : index;
+    },
+
+    hoverIn(index) {
+    if (!this.isMobile) {
+      this.hovered = index;
+    }
+  },
+
+  hoverOut() {
+    if (!this.isMobile) {
+      this.hovered = null;
+    }
+  },
+
+    getIconStyle(i) {
+      const icon = this.icons[i];
+      const angle = this.t * icon.speed + i;
+      const x = Math.cos(angle) * icon.radius;
+      const y = Math.sin(angle * 1.5) * icon.radius;
+      return `
+        position: absolute;
+        top: calc(50% + ${y}px);
+        left: calc(50% + ${x}px);
+        transform: translate(-50%, -50%);
+      `;
+    },
+
+    getLineStyle(i) {
+      const icon = this.icons[i];
+      const angle = this.t * icon.speed + i;
+      const x = Math.cos(angle) * icon.radius;
+      const y = Math.sin(angle * 1.5) * icon.radius;
+      const length = Math.sqrt(x * x + y * y);
+      const rotation = Math.atan2(y, x) * 180 / Math.PI;
+      return `
+        width: ${length}px;
+        height: 1px;
+        background-color: rgba(0, 0, 0, 0.2);
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: rotate(${rotation}deg) translateX(0);
+        transform-origin: left;
+      `;
+    }
+  }
+}
+</script>
+
+
+
+
+
   <style>
   :root {
     --fiattib-color: #7AC2A5;
@@ -32,35 +133,96 @@
   .text-primary { color: var(--fiattib-color); }
   .border-primary { border-color: var(--fiattib-color); }
   </style>
+
+<style>
+@keyframes orbit {
+  0%   { transform: rotate(calc(var(--i) * 90deg)) translateX(150px) rotate(calc(-1 * var(--i) * 90deg)); }
+  100% { transform: rotate(calc(var(--i) * 90deg + 360deg)) translateX(150px) rotate(calc(-1 * (var(--i) * 90deg + 360deg))); }
+}
+
+.orbit-icon {
+  animation: orbit 20s linear infinite;
+  transform-origin: center;
+}
+</style>
+
+
 </head>
-<body class="bg-gray-50 text-gray-800" x-data="langSwitcher">
-  <!-- Navbar -->
-  <header class="flex items-center justify-between p-6 bg-white shadow-md">
-    <div class="flex items-center space-x-2">
-      <img src="images/logo.png" alt="FIATTIB Logo" class="w-8 h-8 object-contain" />
-      <span class="text-xl font-bold text-black">FIATTIB</span>
+
+<body class="bg-gray-50 text-gray-800" x-data="mainApp()" x-init="init()">
+
+    <!-- Navbar -->
+  <header 
+    x-data="{ lastScrollY: window.scrollY, show: true }"
+    x-init="
+      window.addEventListener('scroll', () => {
+        const current = window.scrollY;
+        show = current < lastScrollY || current <= 10;
+        lastScrollY = current;
+      });
+    "
+    x-show="show"
+    x-transition:enter="transition transform ease-out duration-300"
+    x-transition:enter-start="-translate-y-full opacity-0"
+    x-transition:enter-end="translate-y-0 opacity-100"
+    x-transition:leave="transition transform ease-in duration-200"
+    x-transition:leave-start="translate-y-0 opacity-100"
+    x-transition:leave-end="-translate-y-full opacity-0"
+
+    class="sticky top-0 z-50 bg-white/50 backdrop-blur-md shadow-md px-4 sm:px-8 py-4 flex items-center justify-between transition-all duration-300">
+    <!-- Logo + Brand -->
+    <div class="flex items-center space-x-3">
+      <img src="images/logo.png" alt="FIATTIB Logo" class="w-7 h-7 object-contain" />
+      <span class="text-lg sm:text-xl font-bold text-black tracking-wide">FIATTIB</span>
     </div>
-    <div class="flex items-center space-x-4">
-      <a href="#" class="px-4 py-2 text-white bg-primary rounded hover:bg-primary/80">Get Started</a>
+
+      <nav class="hidden md:flex space-x-6 ml-6">
+        <a href="#about"
+          :class="active === 'about' ? 'bg-primary text-white px-3 py-1 rounded-md font-semibold' : 'text-gray-700'"
+          class="hover:text-primary transition">About</a>
+
+        <a href="#features"
+          :class="active === 'features' ? 'bg-primary text-white px-3 py-1 rounded-md font-semibold' : 'text-gray-700'"
+          class="hover:text-primary transition">Features</a>
+
+        <a href="#who"
+          :class="active === 'who' ? 'bg-primary text-white px-3 py-1 rounded-md font-semibold' : 'text-gray-700'"
+          class="hover:text-primary transition">Users</a>
+
+        <a href="#demo"
+          :class="active === 'demo' ? 'bg-primary text-white px-3 py-1 rounded-md font-semibold' : 'text-gray-700'"
+          class="hover:text-primary transition">Preview</a>
+
+      </nav>
+
+
+    <!-- Right side: CTA + Lang -->
+    <div class="flex items-center space-x-3">
+      <a href="#"
+        class="bg-primary text-white px-4 py-2 rounded-xl shadow hover:bg-primary/80 transition-all duration-200">
+        Get Started
+      </a>
+
       <!-- Language Switcher -->
       <div x-data="{ open: false }" class="relative">
-        <button @click="open = !open" class="text-sm text-gray-700 hover:text-black flex items-center">
+        <button @click="open = !open"
+                class="text-sm font-medium text-gray-700 hover:text-black flex items-center transition">
           <span x-text="lang"></span>
           <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
           </svg>
         </button>
+
         <div x-show="open" @click.away="open = false"
-          x-transition:enter="transition ease-out duration-100"
-          x-transition:enter-start="opacity-0 scale-95"
-          x-transition:enter-end="opacity-100 scale-100"
-          x-transition:leave="transition ease-in duration-75"
-          x-transition:leave-start="opacity-100 scale-100"
-          x-transition:leave-end="opacity-0 scale-95"
-          class="absolute right-0 mt-2 w-28 bg-white border rounded shadow-lg z-50">
-          <a @click.prevent="setLang('EN'); open = false" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">EN</a>
-          <a @click.prevent="setLang('RU'); open = false" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">RU</a>
-          <a @click.prevent="setLang('UZ'); open = false" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">UZ</a>
+            x-transition
+            class="absolute right-0 mt-2 w-28 bg-white border rounded shadow-lg z-50">
+          <template x-for="code in ['EN', 'RU', 'UZ']" :key="code">
+            <a @click.prevent="setLang(code); open = false"
+              :class="lang === code ? 'bg-primary/10 text-primary font-semibold' : 'text-gray-700'"
+              class="block px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer transition"
+              x-text="code">
+            </a>
+          </template>
         </div>
       </div>
     </div>
@@ -68,93 +230,126 @@
 
   <!-- Hero Section -->
   <section class="text-center py-20 px-6 bg-primary/10">
-    <h2 class="text-4xl font-bold mb-4" x-text="translations[lang]?.title"></h2>
+    <h2 class="text-4xl font-bold mb-4">Welcome to FIATTIB</h2>
     <p class="text-lg mb-8" x-text="translations[lang]?.subtitle"></p>
-    <div class="space-x-4">
+    <div  class="flex flex-col sm:flex-row gap-4 items-center justify-center">
       <a href="#" class="px-6 py-3 bg-primary text-white rounded hover:bg-primary/80" x-text="translations[lang]?.explore"></a>
       <a href="#" class="px-6 py-3 border border-primary text-primary rounded hover:bg-primary/10" x-text="translations[lang]?.demo"></a>
     </div>
   </section>
-  <!-- About Section -->
-<section class="py-16 px-6 max-w-5xl mx-auto">
+ <!-- About Section -->
+<section id="about" class="py-16 px-4 max-w-5xl mx-auto text-center">
   <div class="md:flex md:items-center md:space-x-12">
     <div class="md:w-1/2 mb-8 md:mb-0">
-      <img src="images/main_dashboard2.png" alt="FIATTIB dashboard mockup" class="rounded shadow" />
+      <img src="images/main_dashboard2.png" alt="FIATTIB dashboard mockup" class="rounded shadow mx-auto" />
     </div>
-    <div class="md:w-1/2">
-      <h3 x-text="translations[lang]?.about_title"></h3>
-      <p x-text="translations[lang]?.about_1"></p>
-      <p x-text="translations[lang]?.about_2"></p>
+    <div class="md:w-1/2 text-left">
+      <h3 class="text-3xl font-semibold text-center md:text-left mb-6" x-text="translations[lang]?.about_title"></h3>
+      <p class="mb-4" x-text="translations[lang]?.about_1"></p>
+      <p class="mb-2 font-semibold" x-text="translations[lang]?.about_2"></p>
       <p x-text="translations[lang]?.about_3"></p>
     </div>
   </div>
 </section>
 
-<!-- Features Section -->
-<section class="py-16 bg-white px-6">
-  <h3 class="text-3xl font-semibold text-center mb-10" x-text="translations[lang]?.features_title"></h3>
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
-    <div class="text-center">
-      <div class="text-4xl mb-2">🔒</div>
-      <h4 x-text="translations[lang]?.feature_1"></h4>
-    </div>
-    <div class="text-center">
-      <div class="text-4xl mb-2">📅</div>
-      <h4 x-text="translations[lang]?.feature_2"></h4>
-    </div>
-    <div class="text-center">
-      <div class="text-4xl mb-2">📈</div>
-      <h4 x-text="translations[lang]?.feature_3"></h4>
-    </div>
-    <div class="text-center">
-      <div class="text-4xl mb-2">🤝</div>
-      <h4 x-text="translations[lang]?.feature_4"></h4>
+
+<section id="features"
+         class="relative h-screen overflow-hidden"
+         style="background: radial-gradient(ellipse at center, #7AC2A5 0%, #f8fafc 100%)"
+         x-data="mainApp()"
+         x-init="init()"
+         @resize.window="isMobile = window.innerWidth < 768">
+
+  <!-- Center Logo -->
+  <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20">
+    <div class="w-20 h-20 sm:w-24 sm:h-24 bg-primary rounded-full flex items-center justify-center shadow-xl border-4 border-white">
+      <img src="images/logo.png" alt="FIATTIB Logo" class="w-10 h-10 sm:w-12 sm:h-12 object-contain" />
     </div>
   </div>
+
+  <!-- Orbiting Icons with lines -->
+  <template x-for="(icon, index) in icons" :key="index">
+    <div>
+      <!-- Connecting Line -->
+      <div :style="getLineStyle(index)" class="absolute z-0"></div>
+
+      <!-- Orbiting Icon -->
+      <div :style="getIconStyle(index)"
+           class="absolute z-10 group cursor-pointer text-center"
+           @mouseenter="hoverIn(index)"
+           @mouseleave="hoverOut()"
+           @click="setActive(index)">
+
+        <div class="text-3xl sm:text-4xl bg-white/30 backdrop-blur-md rounded-full p-2 transition-transform group-hover:scale-125">
+          <span x-text="icon.emoji"></span>
+        </div>
+
+        <!-- Tooltip -->
+        <div x-show="(hovered === index || activeIndex === index) && translations[lang]" 
+            x-transition
+            class="absolute mt-2 bg-gray-900 text-white text-sm rounded px-3 py-1 z-50 whitespace-nowrap"
+            x-text="translations[lang]?.[`feature_${index + 1}_hint`]">
+        </div>
+
+           
+      </div>
+    </div>
+  </template>
+
+  <!-- Bottom Info Panel (for mobile tap or desktop click) -->
+  <!-- Bottom Info Panel -->
+  <div x-show="activeIndex !== null && translations[lang]" x-transition
+      @click.outside="activeIndex = null"
+      class="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-[90%] sm:max-w-md bg-black/70 p-4 rounded text-white text-sm shadow z-30 backdrop-blur">
+    <h4 class="text-base font-semibold mb-2" x-text="translations[lang]?.[`feature_${activeIndex + 1}`]"></h4>
+    <p x-text="translations[lang]?.[`feature_${activeIndex + 1}_expand`]"></p>
+  </div>
+
 </section>
 
+
 <!-- Who It's For Section -->
-<section class="py-16 px-6 bg-gray-50">
+<section id="who" class="py-16 px-4 bg-gray-50">
   <h3 class="text-3xl font-semibold text-center mb-10" x-text="translations[lang]?.who_title"></h3>
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
     <div class="text-center p-6 bg-white rounded shadow">
       <div class="text-4xl mb-2">👤</div>
-      <h4 x-text="translations[lang]?.who_1"></h4>
+      <h4 class="font-semibold mb-2" x-text="translations[lang]?.who_1"></h4>
       <p x-text="translations[lang]?.who_1_desc"></p>
     </div>
     <div class="text-center p-6 bg-white rounded shadow">
       <div class="text-4xl mb-2">🩺</div>
-      <h4 x-text="translations[lang]?.who_2"></h4>
+      <h4 class="font-semibold mb-2" x-text="translations[lang]?.who_2"></h4>
       <p x-text="translations[lang]?.who_2_desc"></p>
     </div>
     <div class="text-center p-6 bg-white rounded shadow">
       <div class="text-4xl mb-2">🏥</div>
-      <h4 x-text="translations[lang]?.who_3"></h4>
+      <h4 class="font-semibold mb-2" x-text="translations[lang]?.who_3"></h4>
       <p x-text="translations[lang]?.who_3_desc"></p>
     </div>
     <div class="text-center p-6 bg-white rounded shadow">
       <div class="text-4xl mb-2">🤝</div>
-      <h4 x-text="translations[lang]?.who_4"></h4>
+      <h4 class="font-semibold mb-2" x-text="translations[lang]?.who_4"></h4>
       <p x-text="translations[lang]?.who_4_desc"></p>
     </div>
   </div>
 </section>
 
 <!-- Demo Preview Section -->
-<section class="py-16 px-6">
+<section id="demo" class="py-16 px-4">
   <h3 class="text-3xl font-semibold text-center mb-10" x-text="translations[lang]?.preview_title"></h3>
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
     <div class="text-center">
-      <img src="images/patient.png" alt="Patient Dashboard" class="rounded shadow mb-4" />
-      <h4 x-text="translations[lang]?.preview_1"></h4>
+      <img src="images/patient.png" alt="Patient Dashboard" class="rounded shadow mb-4 mx-auto" />
+      <h4 class="font-semibold" x-text="translations[lang]?.preview_1"></h4>
     </div>
     <div class="text-center">
-      <img src="images/doctor.png" alt="Doctor View" class="rounded shadow mb-4" />
-      <h4 x-text="translations[lang]?.preview_2"></h4>
+      <img src="images/doctor.png" alt="Doctor View" class="rounded shadow mb-4 mx-auto" />
+      <h4 class="font-semibold" x-text="translations[lang]?.preview_2"></h4>
     </div>
     <div class="text-center">
-      <img src="images/clinical.png" alt="Clinical Observations" class="rounded shadow mb-4" />
-      <h4 x-text="translations[lang]?.preview_3"></h4>
+      <img src="images/clinical.png" alt="Clinical Observations" class="rounded shadow mb-4 mx-auto" />
+      <h4 class="font-semibold" x-text="translations[lang]?.preview_3"></h4>
     </div>
   </div>
 </section>

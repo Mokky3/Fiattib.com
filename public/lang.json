@@ -11,12 +11,24 @@
     "about_1": "FIATTIB is a next-generation electronic health record platform that connects patients, doctors, and clinics through a secure, AI-powered system.",
     "about_2": "Our Mission: To build intelligent, accessible healthcare tools that benefit everyone.",
     "about_3": "Why FIATTIB? We focus on usability, innovation, and multilingual access to make healthcare truly digital.",
+
+     "features_title": "Key Features",
     
-    "features_title": "Key Features",
     "feature_1": "Secure Health Records",
+    "feature_1_hint": "Encrypted and private medical data.",
+    "feature_1_expand": "FIATTIB uses end-to-end encryption to keep your medical history private and safe.",
+    
     "feature_2": "Appointment Management",
+    "feature_2_hint": "Schedule and get reminders easily.",
+    "feature_2_expand": "Plan, book, and track appointments effortlessly with smart scheduling tools.",
+
     "feature_3": "Clinical Dashboard",
+    "feature_3_hint": "Visual health insights.",
+    "feature_3_expand": "Get real-time charts and AI-driven indicators to help doctors make quick decisions.",
+
     "feature_4": "For Partners & Investors",
+    "feature_4_hint": "Data and tools for growth.",
+    "feature_4_expand": "Access APIs, analytics, and dashboards to measure clinic performance and ROI.",
 
     "who_title": "Who Uses FIATTIB?",
     "who_1": "For Patients",
@@ -45,12 +57,25 @@
     "about_1": "FIATTIB — это современная электронная медицинская система, объединяющая пациентов, врачей и клиники с помощью безопасной платформы с ИИ.",
     "about_2": "Наша миссия: создавать доступные и умные инструменты здравоохранения для всех.",
     "about_3": "Почему FIATTIB? Мы делаем упор на удобство, инновации и мультиязычность.",
-
+    
     "features_title": "Ключевые возможности",
+
     "feature_1": "Безопасные медицинские записи",
+    "feature_1_hint": "Шифрование и конфиденциальность данных.",
+    "feature_1_expand": "FIATTIB использует сквозное шифрование для защиты вашей медицинской информации.",
+    
     "feature_2": "Управление приёмами",
+    "feature_2_hint": "Планирование и напоминания о приёмах.",
+    "feature_2_expand": "Записывайтесь на приёмы, получайте уведомления и управляйте календарём легко и быстро.",
+   
     "feature_3": "Клиническая панель",
+    "feature_3_hint": "Визуализация и анализ здоровья.",
+    "feature_3_expand": "Просматривайте графики и получайте подсказки на основе ИИ для быстрой диагностики.",
+
+    
     "feature_4": "Для партнёров и инвесторов",
+    "feature_4_hint": "Инструменты для развития и анализа.",
+    "feature_4_expand": "Получайте доступ к API, аналитике и отчётам для оценки эффективности и инвестиций.",
 
     "who_title": "Кто использует FIATTIB?",
     "who_1": "Для пациентов",
@@ -80,11 +105,23 @@
     "about_2": "Bizning vazifamiz: hamma uchun aqlli va ochiq sog‘liqni saqlash vositalarini yaratish.",
     "about_3": "Nega FIATTIB? Biz qulaylik, innovatsiya va ko‘p tillilikka e’tibor qaratamiz.",
 
-    "features_title": "Asosiy xususiyatlar",
+    "features_title": "Asosiy imkoniyatlar",
+
     "feature_1": "Xavfsiz tibbiy yozuvlar",
+    "feature_1_hint": "Shifrlangan va shaxsiy ma’lumotlar.",
+    "feature_1_expand": "FIATTIB sizning tibbiy tarixingizni shifrlab, ishonchli tarzda saqlaydi.",
+
     "feature_2": "Uchrashuvlarni boshqarish",
-    "feature_3": "Klinik panel",
+    "feature_2_hint": "Rejalashtirish va eslatmalar.",
+    "feature_2_expand": "Qabul vaqtlarini belgilang, eslatmalar oling va klinik jadvalingizni boshqaring.",
+
+    "feature_3": "Klinik kuzatuv paneli",
+    "feature_3_hint": "Sog‘liq holatini vizual ko‘rinish.",
+    "feature_3_expand": "AI asosida tavsiyalar va real vaqt statistikasi yordamida tez tibbiy qarorlar qabul qiling.",
+
     "feature_4": "Hamkorlar va investorlar uchun",
+    "feature_4_hint": "O‘sish va tahlil uchun vositalar.",
+    "feature_4_expand": "Fiattib sizga API, analitika va samaradorlikni o‘lchash panellarini taqdim etadi.",
 
     "who_title": "Kimlar FIATTIB'dan foydalanadi?",
     "who_1": "Bemorlar uchun",
