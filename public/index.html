@@ -33,11 +33,18 @@ function mainApp() {
 
       fetch('lang.json')
         .then(res => res.json())
-        .then(data => this.translations = data)
+        .then(data => {
+          this.translations = data;
+          this.$nextTick(() => {
+            // Trigger DOM updates once data is ready
+            this.activeIndex = null; // reset popup
+          });
+        })
         .catch(err => console.error("Translation load error:", err));
 
       this.animate();
     },
+
 
     handleScroll() {
       this.scrollY = window.scrollY;
@@ -97,6 +104,7 @@ function mainApp() {
 
 
 
+
   <style>
   :root {
     --fiattib-color: #7AC2A5;
@@ -104,6 +112,36 @@ function mainApp() {
   .bg-primary { background-color: var(--fiattib-color); }
   .text-primary { color: var(--fiattib-color); }
   .border-primary { border-color: var(--fiattib-color); }
+
+  .perspective {
+    perspective: 1500px;
+  }
+  .card-inner {
+    transition: transform 0.8s;
+    transform-style: preserve-3d;
+    position: relative;
+  }
+  .card-flipped {
+    transform: rotateY(180deg);
+  }
+  .card-face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: 1rem;
+  }
+  .card-front {
+    background: white;
+    z-index: 2;
+  }
+  .card-back {
+    background: #7AC2A5;
+    color: white;
+    transform: rotateY(180deg);
+  }
+
+
   </style>
 
 <style>
@@ -314,9 +352,11 @@ function mainApp() {
 
   <!-- Background "FEATURES" Text -->
   <div class="absolute inset-0 flex items-center justify-center z-0 pointer-events-none">
-    <h2 class="font-extrabold text-white/10 tracking-wider uppercase text-[10vw] sm:text-[12vw] transition-transform duration-300"
-        :style="`transform: scale(${1 + scrollY / 1500}); opacity: ${Math.min(1, scrollY / 500)}`"
-        x-text="translations[lang]?.features_title || 'Features'">
+    <h2 class="font-extrabold text-white/10 tracking-wider uppercase 
+           text-[12vw] sm:text-[8vw] md:text-[6vw] lg:text-[5vw] 
+           transition-transform duration-300"
+     :style="`transform: scale(${1 + scrollY / 1500}); opacity: ${Math.min(1, scrollY / 500)}`"
+     x-effect="$el.innerText = translations[lang]?.features_title || 'Features'">
     </h2>
   </div>
 
@@ -371,30 +411,61 @@ function mainApp() {
 
 <!-- Who It's For Section -->
 <section id="who" class="py-16 px-4 bg-gray-50">
-  <h3 class="text-3xl font-semibold text-center mb-10" x-text="translations[lang]?.who_title"></h3>
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
-    <div class="text-center p-6 bg-white rounded shadow">
-      <div class="text-4xl mb-2">👤</div>
-      <h4 class="font-semibold mb-2" x-text="translations[lang]?.who_1"></h4>
-      <p x-text="translations[lang]?.who_1_desc"></p>
-    </div>
-    <div class="text-center p-6 bg-white rounded shadow">
-      <div class="text-4xl mb-2">🩺</div>
-      <h4 class="font-semibold mb-2" x-text="translations[lang]?.who_2"></h4>
-      <p x-text="translations[lang]?.who_2_desc"></p>
-    </div>
-    <div class="text-center p-6 bg-white rounded shadow">
-      <div class="text-4xl mb-2">🏥</div>
-      <h4 class="font-semibold mb-2" x-text="translations[lang]?.who_3"></h4>
-      <p x-text="translations[lang]?.who_3_desc"></p>
-    </div>
-    <div class="text-center p-6 bg-white rounded shadow">
-      <div class="text-4xl mb-2">🤝</div>
-      <h4 class="font-semibold mb-2" x-text="translations[lang]?.who_4"></h4>
-      <p x-text="translations[lang]?.who_4_desc"></p>
-    </div>
+  <h3 class="text-3xl font-semibold text-center mb-10" x-text="translations[lang]?.who_title || 'Who Uses FIATTIB?'"></h3>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto" x-data="{ openIndex: null }">
+    <template x-for="(item, i) in [
+      {
+        imgFront: 'images/patient_front.png',
+        imgBack:  'images/patient_back.png',
+        title: 'who_1',
+        descKey: 'who_1_desc'
+      },
+      {
+        imgFront: 'images/doc_exhausted.png',
+        imgBack:  'images/doc_happy.png',
+        title: 'who_2',
+        descKey: 'who_2_desc'
+      },
+      {
+        imgFront: 'images/hospital_front.png',
+        imgBack:  'images/hospital_back.png',
+        title: 'who_3',
+        descKey: 'who_3_desc'
+      },
+      {
+        imgFront: 'images/partner_front.png',
+        imgBack:  'images/partner_back.png',
+        title: 'who_4',
+        descKey: 'who_4_desc'
+      }
+    ]" :key="i">
+      
+      <div class="relative w-full h-64 perspective cursor-pointer" @click="openIndex = openIndex === i ? null : i">
+        <div :class="{ 'card-inner': true, 'card-flipped': openIndex === i }" class="w-full h-full">
+
+          <!-- Front -->
+          <div class="card-face card-front shadow-lg flex flex-col items-center justify-center p-4">
+            <img :src="item.imgFront" alt="Front" class="w-28 sm:w-36 h-auto object-contain mb-4" />
+            <h4 class="text-lg font-semibold" x-text="translations[lang]?.[item.title] || 'Unknown'"></h4>
+          </div>
+
+          <!-- Back -->
+          <div class="card-face card-back shadow-lg flex flex-col items-center justify-center p-6 text-center">
+            <img :src="item.imgBack" alt="Back" class="w-28 sm:w-36 h-auto object-contain mb-4" />
+            <p class="text-sm" x-text="translations[lang]?.[item.descKey]"></p>
+          </div>
+
+
+        </div>
+      </div>
+    </template>
   </div>
 </section>
+
+
+
+
 
 <!-- Demo Preview Section -->
 <section id="demo" class="py-16 px-4">
@@ -417,19 +488,45 @@ function mainApp() {
 
 
   <!-- Call to Action Section -->
-  <section class="py-16 px-6 bg-primary text-white text-center">
-    <h3 class="text-3xl font-semibold mb-4" x-text="translations[lang]?.cta"></h3>
-    <p class="mb-8" x-text="translations[lang]?.cta_sub"></p>
-    <div class="space-x-4">
-      <a href="#" class="px-6 py-3 bg-white text-primary rounded hover:bg-gray-100" x-text="translations[lang]?.demo"></a>
-      <a href="#" class="px-6 py-3 border border-white text-white rounded hover:bg-primary/80">Contact Us</a>
-    </div>
-  </section>
+<section class="py-16 px-6 bg-primary text-white text-center">
+  <h3 class="text-3xl sm:text-4xl font-bold mb-4" x-text="translations[lang]?.cta"></h3>
+  <p class="mb-8 text-base sm:text-lg" x-text="translations[lang]?.cta_sub"></p>
+
+  <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+    <a href="#"
+       class="px-6 py-3 bg-white text-primary font-medium rounded hover:bg-gray-100 transition"
+       x-text="translations[lang]?.demo"></a>
+
+    <a href="#"
+       class="px-6 py-3 border border-white text-white font-medium rounded hover:bg-white/10 transition">
+       Contact Us
+    </a>
+  </div>
+</section>
+
 
   <!-- Footer -->
-  <footer class="bg-gray-100 text-center py-8">
-    <p>&copy; 2025 FIATTIB. <span x-text="translations[lang]?.footer"></span></p>
-    <p class="text-sm">contact@fiattib.uz | www.fiattib.uz</p>
-  </footer>
+<footer class="w-full bg-gray-100 text-center text-gray-700 py-8 px-4 mt-0 border-t border-gray-200">
+  <div class="max-w-7xl mx-auto space-y-4">
+
+    <p class="text-base font-semibold">&copy; 2025 FIATTIB. <span x-text="translations[lang]?.footer"></span></p>
+
+    <nav class="flex flex-wrap justify-center gap-4 text-sm">
+      <a href="#about" class="hover:text-primary transition">About</a>
+      <a href="#features" class="hover:text-primary transition">Features</a>
+      <a href="#who" class="hover:text-primary transition">Users</a>
+      <a href="#demo" class="hover:text-primary transition">Demo</a>
+      <a href="/privacy" class="hover:text-primary transition">Privacy Policy</a>
+      <a href="/terms" class="hover:text-primary transition">Terms of Service</a>
+    </nav>
+
+    <div class="text-sm">
+      <a href="mailto:contact@fiattib.uz" class="hover:underline">contact@fiattib.uz</a> |
+      <a href="https://fiattib.uz" target="_blank" class="hover:underline">www.fiattib.uz</a>
+    </div>
+
+  </div>
+</footer>
+
 </body>
 </html>
