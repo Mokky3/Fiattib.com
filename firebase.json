@@ -19,6 +19,13 @@
         "destination": "/maintenance.html",
         "type": 302
       },
+
+      {
+        "source": "/maintenance",
+        "destination": "/maintenance.html",
+        "type": 302
+      },
+
       {
         "source": "/about",
         "destination": "/maintenance.html",
