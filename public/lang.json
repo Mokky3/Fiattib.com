@@ -1,5 +1,18 @@
 {
   "EN": {
+
+
+    "about": "About",
+    "features": "Features",
+    "users": "Users",
+    "preview": "Preview",
+    "get_started": "Get Started",
+    "blog": "Blog",
+    "pricing": "Pricing",
+    "support": "Support",
+    "language": "Language",
+
+
     "title": "Smarter Healthcare. Seamless Records.",
     "subtitle": "All-in-one EHR platform with AI-powered insights, built for patients, doctors, and clinics.",
     "demo": "Request a Demo",
@@ -46,6 +59,17 @@
     "preview_3": "Clinical Observations"
   },
   "RU": {
+
+    "about": "О нас",
+    "features": "Функции",
+    "users": "Пользователи",
+    "preview": "Превью",
+    "get_started": "Начать",
+    "blog": "Блог",
+    "pricing": "Цены",
+    "support": "Поддержка",
+    "language": "Язык",
+
     "title": "Умное здравоохранение. Безупречные записи.",
     "subtitle": "Все в одном: EHR-платформа с AI-аналитикой для пациентов, врачей и клиник.",
     "demo": "Запросить демонстрацию",
@@ -93,6 +117,17 @@
     "preview_3": "Клинические наблюдения"
   },
   "UZ": {
+
+    "about": "Haqida",
+    "features": "Xususiyatlar",
+    "users": "Foydalanuvchilar",
+    "preview": "Ko‘rib chiqish",
+    "get_started": "Boshlash",
+    "blog": "Blog",
+    "pricing": "Narxlar",
+    "support": "Yordam",
+    "language": "Til",
+
     "title": "Aqlli sog‘liqni saqlash. Mukammal yozuvlar.",
     "subtitle": "Barcha uchun AI yordamli EHR platformasi: bemorlar, shifokorlar, klinikalar.",
     "demo": "Demoni so'rang",

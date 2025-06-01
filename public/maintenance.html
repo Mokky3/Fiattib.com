@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FIATTIB – Maintenance</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .float-gear {
+      position: absolute;
+      opacity: 0.05;
+      animation: float 12s ease-in-out infinite;
+    }
+
+    .float-gear:nth-child(1) {
+      top: 20%;
+      left: 10%;
+      animation-delay: 0s;
+    }
+
+    .float-gear:nth-child(2) {
+      top: 40%;
+      left: 70%;
+      animation-delay: 3s;
+    }
+
+    .float-gear:nth-child(3) {
+      top: 60%;
+      left: 30%;
+      animation-delay: 6s;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-30px) rotate(180deg); }
+    }
+  </style>
+</head>
+<body class="relative min-h-screen bg-gradient-to-tr from-[#7AC2A5] to-[#e7f9f3] flex items-center justify-center overflow-hidden">
+
+  <!-- Floating background gears -->
+  <img src="https://cdn-icons-png.flaticon.com/512/1006/1006360.png" class="w-32 float-gear" />
+  <img src="https://cdn-icons-png.flaticon.com/512/1006/1006360.png" class="w-24 float-gear" />
+  <img src="https://cdn-icons-png.flaticon.com/512/1006/1006360.png" class="w-28 float-gear" />
+
+  <!-- Blurred Glass Panel -->
+  <div class="relative z-10 max-w-lg w-full bg-white/20 backdrop-blur-lg border border-white/30 shadow-xl rounded-xl p-8 text-center text-white">
+    <img src="https://cdn-icons-png.flaticon.com/512/1006/1006360.png" alt="Maintenance" class="w-16 h-16 mx-auto mb-4 opacity-90" />
+    <h1 class="text-3xl font-bold mb-2">Under Maintenance</h1>
+    <p class="mb-4 text-white/90">
+      We're performing a quick upgrade to improve your experience. Sit back, relax, and sip some tea. We'll be back soon!
+    </p>
+    <p class="text-sm text-white/70 mb-6">Estimated return: <strong>12:00 PM UTC</strong></p>
+    <a href="/" class="inline-block px-5 py-2 bg-primary text-white font-semibold rounded-xl hover:bg-primary/90 transition">Return Home</a>
+  </div>
+
+</body>
+</html>
