@@ -231,9 +231,9 @@ function mainApp() {
       x-transition
       class="absolute top-full mt-2 bg-white border shadow rounded-md py-2 px-4 z-50 w-40"
     >
-      <a href="/blog" class="block text-sm text-gray-700 hover:text-primary mb-1" x-text="translations[lang]?.blog"></a>
-      <a href="/pricing" class="block text-sm text-gray-700 hover:text-primary mb-1" x-text="translations[lang]?.pricing"></a>
-      <a href="/support" class="block text-sm text-gray-700 hover:text-primary" x-text="translations[lang]?.support"></a>
+      <a href="/maintenance" class="block text-sm text-gray-700 hover:text-primary mb-1" x-text="translations[lang]?.blog"></a>
+      <a href="/maintenance" class="block text-sm text-gray-700 hover:text-primary mb-1" x-text="translations[lang]?.pricing"></a>
+      <a href="/maintenance" class="block text-sm text-gray-700 hover:text-primary" x-text="translations[lang]?.support"></a>
     </div>
   </div>
 
@@ -308,7 +308,7 @@ function mainApp() {
       <a href="#features" @click="mobileOpen = false" x-text="translations[lang]?.features"></a>
       <a href="#who" @click="mobileOpen = false" x-text="translations[lang]?.users"></a>
       <a href="#demo" @click="mobileOpen = false" x-text="translations[lang]?.preview"></a>
-      <a href="#" class="mt-2 bg-primary text-white px-4 py-2 rounded-xl text-center"
+      <a href="/maintenance" class="mt-2 bg-primary text-white px-4 py-2 rounded-xl text-center"
          x-text="translations[lang]?.get_started"></a>
     </nav>
 
@@ -341,8 +341,8 @@ function mainApp() {
 
     <!-- Buttons -->
     <div class="flex flex-col sm:flex-row gap-4 items-center justify-center mt-8 z-10 relative">
-      <a href="#" class="px-6 py-3 bg-primary text-white rounded hover:bg-primary/80 transition" x-text="translations[lang]?.explore"></a>
-      <a href="#" class="px-6 py-3 border border-primary text-primary rounded hover:bg-primary/10 transition" x-text="translations[lang]?.demo"></a>
+      <a href="/maintenance" class="px-6 py-3 bg-primary text-white rounded hover:bg-primary/80 transition" x-text="translations[lang]?.explore"></a>
+      <a href="/maintenance" class="px-6 py-3 border border-primary text-primary rounded hover:bg-primary/10 transition" x-text="translations[lang]?.demo"></a>
     </div>
 
     <!-- Optional Radial Background Glow -->
@@ -570,7 +570,7 @@ function mainApp() {
        class="px-6 py-3 bg-white text-primary font-medium rounded hover:bg-gray-100 transition"
        x-text="translations[lang]?.demo"></a>
 
-    <a href="#"
+    <a href="/maintenance"
        class="px-6 py-3 border border-white text-white font-medium rounded hover:bg-white/10 transition">
        Contact Us
     </a>
@@ -589,7 +589,7 @@ function mainApp() {
       <a href="#features" class="hover:text-primary transition">Features</a>
       <a href="#who" class="hover:text-primary transition">Users</a>
       <a href="#demo" class="hover:text-primary transition">Demo</a>
-      <a href="/privacy" class="hover:text-primary transition">Privacy Policy</a>
+      <a href="/maintenance" class="hover:text-primary transition">Privacy Policy</a>
       <a href="/terms" class="hover:text-primary transition">Terms of Service</a>
     </nav>
 
