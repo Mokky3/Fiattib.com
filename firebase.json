@@ -13,19 +13,24 @@
         ]
       }
     ],
+    "redirects": [
+      {
+        "source": "/terms",
+        "destination": "/maintenance.html",
+        "type": 302
+      },
+      {
+        "source": "/about",
+        "destination": "/maintenance.html",
+        "type": 302
+      },
+      {
+        "source": "/pricing",
+        "destination": "/maintenance.html",
+        "type": 302
+      }
+    ],
     "rewrites": [
-      {
-        "source": "/terms.html",
-        "destination": "/terms.html"
-      },
-      {
-        "source": "/privacy",
-        "destination": "/privacy.html"
-      },
-      {
-        "source": "/maintenance",
-        "destination": "/maintenance.html"
-      },
       {
         "source": "**",
         "destination": "/index.html"
