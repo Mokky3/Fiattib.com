@@ -5,9 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>FIATTIB – Smarter Healthcare</title>
   <link rel="icon" href="favicon.png" type="image/png" />
-  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Preload critical resources -->
+  <link rel="preload" href="lang.json" as="fetch" crossorigin>
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" as="style">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  
+  <link rel="stylesheet" href="css/tailwind.min.css" />
   <link rel="stylesheet" href="css/styles.css" />
-  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  <script src="js/alpine.min.js" defer></script>
 
 <script>
 function mainApp() {
@@ -32,15 +37,29 @@ function mainApp() {
         this.isMobile = window.innerWidth < 768;
       });
 
-      fetch('lang.json')
-        .then(res => res.json())
-        .then(data => {
+      // Load translations with caching
+      const loadTranslations = async () => {
+        try {
+          const response = await fetch('lang.json');
+          if (!response.ok) throw new Error('Failed to load translations');
+          const data = await response.json();
           this.translations = data;
           this.$nextTick(() => {
             this.activeIndex = null;
           });
-        })
-        .catch(err => console.error("Translation load error:", err));
+        } catch (err) {
+          console.error("Translation load error:", err);
+          // Fallback to basic English labels
+          this.translations = {
+            EN: {
+              title: "Smarter Healthcare. Seamless Records.",
+              about: "About",
+              features: "Features"
+            }
+          };
+        }
+      };
+      loadTranslations();
 
       // Setup active section detection
       const observer = new IntersectionObserver((entries) => {
@@ -519,13 +538,21 @@ function mainApp() {
 
           <!-- Front -->
           <div class="card-face card-front shadow-lg flex flex-col items-center justify-center p-4">
-            <img :src="item.imgFront" alt="Front" class="w-28 sm:w-36 h-auto object-contain mb-4" />
+            <picture class="w-28 sm:w-36 h-auto mb-4">
+              <source :srcset="`images/optimized/${item.imgFront.replace('images/', '').replace('.png', '_400.webp')}`" type="image/webp" media="(max-width: 640px)">
+              <source :srcset="`images/optimized/${item.imgFront.replace('images/', '').replace('.png', '.webp')}`" type="image/webp">
+              <img :src="item.imgFront" alt="Front" class="w-full h-auto object-contain" loading="lazy" />
+            </picture>
             <h4 class="text-lg font-semibold" x-text="translations[lang]?.[item.title] || 'Unknown'"></h4>
           </div>
 
           <!-- Back -->
           <div class="card-face card-back shadow-lg flex flex-col items-center justify-center p-6 text-center">
-            <img :src="item.imgBack" alt="Back" class="w-28 sm:w-36 h-auto object-contain mb-4" />
+            <picture class="w-28 sm:w-36 h-auto mb-4">
+              <source :srcset="`images/optimized/${item.imgBack.replace('images/', '').replace('.png', '_400.webp')}`" type="image/webp" media="(max-width: 640px)">
+              <source :srcset="`images/optimized/${item.imgBack.replace('images/', '').replace('.png', '.webp')}`" type="image/webp">
+              <img :src="item.imgBack" alt="Back" class="w-full h-auto object-contain" loading="lazy" />
+            </picture>
             <p class="text-sm" x-text="translations[lang]?.[item.descKey]"></p>
           </div>
 
@@ -545,15 +572,27 @@ function mainApp() {
   <h3 class="text-3xl font-semibold text-center mb-10" x-text="translations[lang]?.preview_title"></h3>
   <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
     <div class="text-center">
-      <img src="images/patient.png" alt="Patient Dashboard" class="rounded shadow mb-4 mx-auto" />
+      <picture class="block">
+        <source srcset="images/optimized/patient_800.webp" type="image/webp" media="(min-width: 768px)">
+        <source srcset="images/optimized/patient_400.webp" type="image/webp" media="(max-width: 767px)">
+        <img src="images/patient.png" alt="Patient Dashboard" class="rounded shadow mb-4 mx-auto" loading="lazy" />
+      </picture>
       <h4 class="font-semibold" x-text="translations[lang]?.preview_1"></h4>
     </div>
     <div class="text-center">
-      <img src="images/doctor.png" alt="Doctor View" class="rounded shadow mb-4 mx-auto" />
+      <picture class="block">
+        <source srcset="images/optimized/doctor_800.webp" type="image/webp" media="(min-width: 768px)">
+        <source srcset="images/optimized/doctor_400.webp" type="image/webp" media="(max-width: 767px)">
+        <img src="images/doctor.png" alt="Doctor View" class="rounded shadow mb-4 mx-auto" loading="lazy" />
+      </picture>
       <h4 class="font-semibold" x-text="translations[lang]?.preview_2"></h4>
     </div>
     <div class="text-center">
-      <img src="images/clinical.png" alt="Clinical Observations" class="rounded shadow mb-4 mx-auto" />
+      <picture class="block">
+        <source srcset="images/optimized/clinical_800.webp" type="image/webp" media="(min-width: 768px)">
+        <source srcset="images/optimized/clinical_400.webp" type="image/webp" media="(max-width: 767px)">
+        <img src="images/clinical.png" alt="Clinical Observations" class="rounded shadow mb-4 mx-auto" loading="lazy" />
+      </picture>
       <h4 class="font-semibold" x-text="translations[lang]?.preview_3"></h4>
     </div>
   </div>
@@ -601,5 +640,19 @@ function mainApp() {
   </div>
 </footer>
 
+  <!-- Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(registration => {
+            console.log('SW registered: ', registration);
+          })
+          .catch(registrationError => {
+            console.log('SW registration failed: ', registrationError);
+          });
+      });
+    }
+  </script>
 </body>
 </html>
