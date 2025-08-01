@@ -7,13 +7,33 @@
     "test": "mocha"
   },
   "dependencies": {
-    "express": "^4.18.0"
+    "compression": "^1.8.1",
+    "express": "^4.18.0",
+    "express-static-gzip": "^3.0.0",
+    "helmet": "^8.1.0"
   },
   "devDependencies": {
+    "@tailwindcss/cli": "^4.1.11",
     "mocha": "^10.0.0",
-    "supertest": "^6.3.3"
+    "supertest": "^6.3.3",
+    "tailwindcss": "^4.1.11"
   },
   "engines": {
     "node": "18.x"
-  }
+  },
+  "description": "## Running Tests",
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Mokky3/Fiattib.com.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Mokky3/Fiattib.com/issues"
+  },
+  "homepage": "https://github.com/Mokky3/Fiattib.com#readme"
 }
